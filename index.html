@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misir Ali</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body style="margin:0; overflow: hidden;">
+  <canvas id="canvas"></canvas>
+  <script>
+    let canvas = document.getElementById("canvas"),
+      context = canvas.getContext("2d"),
+      width = canvas.width = window.innerWidth,
+      height = canvas.height = window.innerHeight,
+      fl = 300,
+      particles = [],
+      numParticles = 100,
+      centerZ = 1000,
+      baseAngle = 0,
+      rotationSpeed = 0.01;
+    let segments = ["যুক্তি", "সূত্র", "তীক্ষ্ণ অবজার্ভেশান", "মুক্তমনা",  "বুদ্ধি", "বিজ্ঞামনষ্ক", "ধৈর্য", "বই পড়া", "অনুসন্ধান", "স্মোকিং", "ঘুমের ঔষধ", "কনশিয়াস মাইন্ড", "সাবকনশিয়াস মাইন্ড", "সাইকোলজি", "প্যারাসাইকোলজি", "তীক্ষ্ণ দৃষ্টি",  "মুক্ত দৃষ্টিভঙ্গি", "বেখেয়ালি", "নাস্তিকতা", "ধর্মের প্রতি সম্মান", "সেনসেটিভ", "লজিক্যাল অনুমান", "সূক্ষ অনুভব সক্ষমতা", "অকৃপণ", "ভুলে যাওয়া রোগ", "রিভার্স লিংকিং", "আত্ম সুখী", "চা খাওয়ার অভ্যাস",  "দার্শনিক মনোভাব", "শান্ত মানসিকতা", "মমত্ববোধ", "মনোবিশ্লেষণ", "সুপ্ত প্রেম", "প্রবলেম সলভিং পাওয়ার", "নারী সঙ্গহীন জীবন", "একাকীত্বে অভিযোজিত হওয়া", "আত্ম কথোপকথন", "একটু অহংকারী", "উপস্থিত বুদ্ধি", "সাইকোলজিস্ট",  "লজিক্যাল এক্সপেলিনেশান", "কৌতুহলী", "রেফেরেন্স", "আদর্শ শ্রোতা", "সুন্দর কথক", "আধ পাগলা", "চির কুমার", "ইষৎ সন্ন্যাস চেতনা", "অন্যকে প্রভাবিত করার ক্ষমতা", "আত্ম বিশ্বাস", "ভয়হীন", "লোভহীন",  "এক্সপেরিমেন্ট", "অলৌকিকতায় অবিশ্বাস"];
+
+    function getRandomInt(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function zsort(particleA, particleB) {
+      return particleB.z - particleA.z;
+    }
+
+    function normalize(value, min, max) {
+      return (value - min) / (max - min);
+    }
+
+    function update() {
+      baseAngle += rotationSpeed;
+      particles.sort(zsort);
+      // Dynamic gradient background
+      let gradient = context.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, `hsl(${Math.random() * 360}, 10%, 10%)`);
+      gradient.addColorStop(1, `hsl(${Math.random() * 360}, 10%, 90%)`);
+      context.fillStyle = gradient;
+      context.fillRect(-width / 2, -height / 2, width, height);
+      // Removed the context.clearRect line so the gradient stays visible
+      for (let i = 0; i < numParticles; i += 1) {
+        let particle = particles[i],
+          perspective = fl / (fl + particle.z);
+        context.save();
+        context.scale(perspective, perspective);
+        context.translate(particle.x, particle.y);
+        // Luma logic to determine particle color based on position
+        let luma = normalize(particle.y, -2000, 2000) * 100;
+        if (luma > 50) {
+          context.fillStyle = `hsl(${Math.random() * 360}, 100%, 10%)`;
+        } else {
+          context.fillStyle = `hsl(${Math.random() * 360}, 100%, 90%)`;
+        }
+        context.font = '40px monospace';
+        context.fillText(particle.text, 0, 0);
+        context.restore();
+        particle.x = Math.cos(particle.angle + baseAngle) * particle.radius;
+        particle.z = centerZ + Math.sin(particle.angle + baseAngle) * particle.radius;
+        particle.y -= 10;
+        if (particle.y < -2000) {
+          particle.y = 2000;
+        }
+      }
+      requestAnimationFrame(update);
+    }
+    for (let i = 0; i < numParticles; i += 1) {
+      let particle = {
+        angle: getRandomInt(0, Math.PI * 2),
+        radius: getRandomInt(100, 1100),
+        y: getRandomInt(2000, -2000),
+        color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+        text: segments[parseInt(Math.random() * segments.length)]
+      };
+      particle.x = Math.cos(particle.angle + baseAngle) * particle.radius;
+      particle.z = centerZ + Math.sin(particle.angle + baseAngle) * particle.radius;
+      particles.push(particle);
+    }
+    context.translate(width / 2, height / 2);
+    document.body.addEventListener("mousemove", function(event) {
+      rotationSpeed = (event.clientX - width / 2) * 0.00005;
+    });
+    update();
+  </script>
+</body>
+<!-- partial:index.partial.html -->
+</html>
+<!-- partial -->
+  
+</body>
+</html>
